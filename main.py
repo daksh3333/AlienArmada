@@ -120,11 +120,12 @@ while running:
     collision = isCollision(enemyX, enemyY, missileX, missileY)
     if collision:
         missileY = 480
-        bullet_state = "loaded"
+        missile_state = "loaded"
         score +=1
         print(score)
         enemyX = random.randint(0, 734)
         enemyY = random.randint(50, 150)
+        enemyX_change += 0.01
 
 
     #Draw
