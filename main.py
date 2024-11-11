@@ -11,6 +11,12 @@ pygame.display.set_caption("Alien Armada")
 icon = pygame.image.load('Alien dude.png')
 pygame.display.set_icon(icon)
 
+#Enemy
+enemyimage = pygame.image.load('img.png')
+enemyX = 370
+enemyY = 50
+enemyX_change = 0
+
 #Player 1
 playerimage = pygame.image.load('spaceship.png')
 playerX = 370
@@ -19,6 +25,9 @@ playerX_change = 0
 
 def player(x,y):
     screen.blit(playerimage, (x, y) )
+
+def enemy(x,y):
+    screen.blit(enemyimage, (x, y) )
 
 # Keep the window open
 running = True
@@ -49,4 +58,5 @@ while running:
         playerX = 736
 
     player(playerX, playerY)
+    enemy(enemyX, enemyY)
     pygame.display.update()
