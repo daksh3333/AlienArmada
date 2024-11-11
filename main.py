@@ -7,6 +7,9 @@ pygame.init()
 #create screen (width, height)
 screen = pygame.display.set_mode((800,600))
 
+#Add Backdrop
+backdrop = pygame.image.load('SPACE.png')
+
 # Title/Icon
 pygame.display.set_caption("Alien Armada")
 icon = pygame.image.load('Alien dude.png')
@@ -36,6 +39,8 @@ running = True
 while running:
     #RGB - Red, Green, Blue, goes up to 255
     screen.fill((0, 0, 128))
+    #Put backdrop image onto the window
+    screen.blit(backdrop, (0,0))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
