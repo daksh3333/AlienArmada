@@ -22,6 +22,15 @@ enemyY = random.randint(50,150)
 enemyX_change = 0.3
 enemyY_change = 40
 
+#Missile
+missileimage = pygame.image.load('missiles.png')
+missileX = 0
+missileY = 480
+missileX_change = 0
+missileY_change = 0.3
+missile_state = "loaded"
+
+
 #Player 1
 playerimage = pygame.image.load('spaceship.png')
 playerX = 370
@@ -34,11 +43,18 @@ def player(x,y):
 def enemy(x,y):
     screen.blit(enemyimage, (x, y) )
 
-# Keep the window open
+def fire_missile(x, y):
+    global missile_state
+    missile_state = "launched"
+    screen.blit(missileimage, (x + 16, y + 10))
+
+#Keep the window open
 running = True
 while running:
+
     #RGB - Red, Green, Blue, goes up to 255
     screen.fill((0, 0, 128))
+
     #Put backdrop image onto the window
     screen.blit(backdrop, (0,0))
 
@@ -53,6 +69,14 @@ while running:
             if event.key == pygame.K_RIGHT:
                 playerX_change = 0.3
 
+            # Missile Movement
+            if event.key == pygame.K_SPACE and missile_state == "loaded":
+                missileX = playerX
+                missileY = playerY
+                fire_missile(missileX,missileY)
+                missile_state = "launched"
+
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
@@ -61,13 +85,13 @@ while running:
     playerX +=  playerX_change
     enemyX += enemyX_change
 
-    #Boundry
+    #Player Bounds and movement
     if playerX <= 0:
         playerX = 0
     elif playerX >= 736:
         playerX = 736
 
-
+    #Enemy Bounds and movement
     if enemyX <= 0:
         enemyX_change = 0.3
         enemyY += enemyY_change
@@ -75,10 +99,18 @@ while running:
         enemyX_change = -0.3
         enemyY += enemyY_change
 
+    #Missile Movement
+    if missile_state == "launched":
+        fire_missile(missileX, missileY)
+        missileY -= missileY_change
+        # Reset missile when it moves off the screen
+        if missileY <= 0:
+            missileY = 480
+            missile_state = "loaded"
 
     #Draw
     player(playerX, playerY)
     enemy(enemyX, enemyY)
 
-
+    #Update the display
     pygame.display.update()
