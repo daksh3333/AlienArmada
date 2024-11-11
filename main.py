@@ -6,6 +6,12 @@ pygame.init()
 #create screen
 screen = pygame.display.set_mode((800,600))
 
+# Title/Icon
+pygame.display.set_caption("Alien Armada")
+icon = pygame.image.load('Alien dude.png')
+pygame.display.set_icon(icon)
+
+
 # Keep the window open
 running = True
 while running:
