@@ -19,7 +19,7 @@ pygame.display.set_icon(icon)
 score = 0
 #Enemy
 enemyimage = pygame.image.load('img.png')
-enemyX = random.randint(0,800)
+enemyX = random.randint(0,734)
 enemyY = random.randint(50,150)
 enemyX_change = 0.3
 enemyY_change = 40
@@ -123,6 +123,8 @@ while running:
         bullet_state = "loaded"
         score +=1
         print(score)
+        enemyX = random.randint(0, 734)
+        enemyY = random.randint(50, 150)
 
 
     #Draw
