@@ -1,5 +1,7 @@
 import pygame
 import random
+import math
+
 
 #initialize pygame
 pygame.init()
@@ -14,7 +16,7 @@ backdrop = pygame.image.load('SPACE.png')
 pygame.display.set_caption("Alien Armada")
 icon = pygame.image.load('Alien dude.png')
 pygame.display.set_icon(icon)
-
+score = 0
 #Enemy
 enemyimage = pygame.image.load('img.png')
 enemyX = random.randint(0,800)
@@ -48,6 +50,12 @@ def fire_missile(x, y):
     missile_state = "launched"
     screen.blit(missileimage, (x + 16, y + 10))
 
+def isCollision(enemyX, enemyY, missileX, missileY):
+    distance = math.sqrt((math.pow(enemyX - missileX, 2)) + (math.pow(enemyY - missileY, 2)))
+    if distance < 27:
+        return True
+    else:
+        return False
 #Keep the window open
 running = True
 while running:
@@ -107,6 +115,15 @@ while running:
         if missileY <= 0:
             missileY = 480
             missile_state = "loaded"
+
+    #Collision
+    collision = isCollision(enemyX, enemyY, missileX, missileY)
+    if collision:
+        missileY = 480
+        bullet_state = "loaded"
+        score +=1
+        print(score)
+
 
     #Draw
     player(playerX, playerY)
