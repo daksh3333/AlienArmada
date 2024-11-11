@@ -16,7 +16,8 @@ pygame.display.set_icon(icon)
 enemyimage = pygame.image.load('img.png')
 enemyX = random.randint(0,800)
 enemyY = random.randint(50,150)
-enemyX_change = 0
+enemyX_change = 0.3
+enemyY_change = 40
 
 #Player 1
 playerimage = pygame.image.load('spaceship.png')
@@ -51,13 +52,28 @@ while running:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
 
+    #Update position
     playerX +=  playerX_change
+    enemyX += enemyX_change
 
+    #Boundry
     if playerX <= 0:
         playerX = 0
     elif playerX >= 736:
         playerX = 736
 
+
+    if enemyX <= 0:
+        enemyX_change = 0.3
+        enemyY += enemyY_change
+    elif enemyX >= 736:
+        enemyX_change = -0.3
+        enemyY += enemyY_change
+
+
+    #Draw
     player(playerX, playerY)
     enemy(enemyX, enemyY)
+
+
     pygame.display.update()
