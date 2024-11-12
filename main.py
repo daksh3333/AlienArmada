@@ -163,8 +163,15 @@ while running:
             print(score_val)
             enemyX[i] = random.randint(0, 734)
             enemyY[i] = random.randint(50, 150)
-            enemyX_change[i] += 0.01
+            enemyX_change[i] += 0.02
 
+        #increase number of enemies
+            number_of_enemies += 1
+            enemyimage.append(pygame.image.load('img.png'))
+            enemyX.append(random.randint(0, 734))
+            enemyY.append(random.randint(50, 150))
+            enemyX_change.append(0.3)
+            enemyY_change.append(40)
 
         # draw enemy
         enemy(enemyX[i], enemyY[i], i)
