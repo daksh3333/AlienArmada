@@ -2,6 +2,7 @@ import math
 import random
 
 import pygame
+from pygame import mixer
 
 # initialize pygame
 pygame.init()
@@ -11,6 +12,10 @@ screen = pygame.display.set_mode((800, 600))
 
 # Add Backdrop
 backdrop = pygame.image.load('SPACE.png')
+
+#background sound
+mixer.music.load('music.wav')
+mixer.music.play(-1)
 
 # Title/Icon
 pygame.display.set_caption("Alien Armada")
@@ -104,6 +109,8 @@ while running:
 
             # Missile Movement
             if event.key == pygame.K_SPACE and missile_state == "loaded":
+                launch_sound = mixer.Sound('laser.wav')
+                launch_sound.play()
                 missileX = playerX
                 missileY = playerY
                 fire_missile(missileX, missileY)
@@ -135,6 +142,8 @@ while running:
         # Collision
         collision = isCollision(enemyX[i], enemyY[i], missileX, missileY)
         if collision:
+            boom_sound = mixer.Sound('explosion.wav')
+            boom_sound.play()
             missileY = 480
             missile_state = "loaded"
             score_val += 1
@@ -142,6 +151,7 @@ while running:
             enemyX[i] = random.randint(0, 734)
             enemyY[i] = random.randint(50, 150)
             enemyX_change[i] += 0.01
+
 
         # draw enemy
         enemy(enemyX[i], enemyY[i], i)
