@@ -1,19 +1,18 @@
 import math
 import random
-
 import pygame
 from pygame import mixer
 
-# initialize pygame
+# Initialize pygame
 pygame.init()
 
-# create screen (width, height)
+# Create screen (width, height)
 screen = pygame.display.set_mode((800, 600))
 
 # Add Backdrop
 backdrop = pygame.image.load('SPACE.png')
 
-#background sound
+# Background sound
 mixer.music.load('music.wav')
 mixer.music.play(-1)
 
@@ -39,11 +38,8 @@ for i in range(number_of_enemies):
 
 # Missile
 missileimage = pygame.image.load('missiles.png')
-missileX = 0
-missileY = 480
-missileX_change = 0
+missiles = []
 missileY_change = 0.3
-missile_state = "loaded"
 
 # Player 1
 playerimage = pygame.image.load('spaceship.png')
@@ -51,94 +47,71 @@ playerX = 370
 playerY = 480
 playerX_change = 0
 
-
-#score
+# Score
 score_val = 0
-font = pygame.font.Font('freesansbold.ttf',32)
-over_text = pygame.font.Font('freesansbold.ttf',72)
+font = pygame.font.Font('freesansbold.ttf', 32)
+over_text = pygame.font.Font('freesansbold.ttf', 72)
 
 testX = 10
 testY = 10
 
 def game_over_text():
     over_text_display = over_text.render("GAME OVER", True, (255, 255, 255))
-    screen.blit(over_text_display, (200,250))
+    screen.blit(over_text_display, (200, 250))
 
 def show_score(x, y):
-    score = font.render("Score: " + str(score_val), True, (255,255,255))
-    screen.blit(score, (x,y))
-
+    score = font.render("Score: " + str(score_val), True, (255, 255, 255))
+    screen.blit(score, (x, y))
 
 def player(x, y):
     screen.blit(playerimage, (x, y))
 
-
 def enemy(x, y, i):
     screen.blit(enemyimage[i], (x, y))
 
-
 def fire_missile(x, y):
-    global missile_state
-    missile_state = "launched"
-    screen.blit(missileimage, (x + 16, y + 10))
-
+    missiles.append([x + 16, y + 10])
 
 def isCollision(enemyX, enemyY, missileX, missileY):
     distance = math.sqrt((math.pow(enemyX - missileX, 2)) + (math.pow(enemyY - missileY, 2)))
-    if distance < 27:
-        return True
-    else:
-        return False
+    return distance < 27
 
-
-# Keep the window open
+# Main Game Loop
 running = True
 while running:
-
-    # RGB - Red, Green, Blue, goes up to 255
-    screen.fill((0, 0, 128))
-
-    # Put backdrop image onto the window
-    screen.blit(backdrop, (0, 0))
+    screen.fill((0, 0, 128))  # RGB background
+    screen.blit(backdrop, (0, 0))  # Backdrop image
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # Check left/right when keystroke is pressed
+        # Check left/right movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 playerX_change = -0.5
             if event.key == pygame.K_RIGHT:
                 playerX_change = 0.5
-
-            # Missile Movement
-            if event.key == pygame.K_SPACE and missile_state == "loaded":
+            # Fire missile on space key
+            if event.key == pygame.K_SPACE:
                 launch_sound = mixer.Sound('laser.wav')
                 launch_sound.play()
-                missileX = playerX
-                missileY = playerY
-                fire_missile(missileX, missileY)
-                missile_state = "launched"
+                fire_missile(playerX, playerY)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
 
-    # Update position
+    # Update player position
     playerX += playerX_change
-
-    # Player Bounds and movement
     if playerX <= 0:
         playerX = 0
     elif playerX >= 736:
         playerX = 736
 
-    # Enemy Bounds and movement
+    # Enemy movement and collision
     for i in range(number_of_enemies):
-
-        #game over
-        if enemyY[i] > 450:
+        if enemyY[i] > 450:  # Game over condition
             for j in range(number_of_enemies):
                 enemyY[j] = 2000
             game_over_text()
@@ -152,43 +125,30 @@ while running:
             enemyX_change[i] = -0.3
             enemyY[i] += enemyY_change[i]
 
-        # Collision
-        collision = isCollision(enemyX[i], enemyY[i], missileX, missileY)
-        if collision:
-            boom_sound = mixer.Sound('explosion.wav')
-            boom_sound.play()
-            missileY = 480
-            missile_state = "loaded"
-            score_val += 1
-            print(score_val)
-            enemyX[i] = random.randint(0, 734)
-            enemyY[i] = random.randint(50, 150)
-            enemyX_change[i] += 0.02
+        # Check collisions with each missile
+        for missile in missiles[:]:
+            if isCollision(enemyX[i], enemyY[i], missile[0], missile[1]):
+                boom_sound = mixer.Sound('explosion.wav')
+                boom_sound.play()
+                missiles.remove(missile)  # Remove missile on collision
+                score_val += 1
+                enemyX[i] = random.randint(0, 734)
+                enemyY[i] = random.randint(50, 150)
+                enemyX_change[i] += 0.02  # Increase difficulty
 
-        #increase number of enemies
-            number_of_enemies += 1
-            enemyimage.append(pygame.image.load('img.png'))
-            enemyX.append(random.randint(0, 734))
-            enemyY.append(random.randint(50, 150))
-            enemyX_change.append(0.3)
-            enemyY_change.append(40)
-
-        # draw enemy
+        # Draw enemy
         enemy(enemyX[i], enemyY[i], i)
 
-    # Missile Movement
-    if missile_state == "launched":
-        fire_missile(missileX, missileY)
-        missileY -= missileY_change
-        # Reset missile when it moves off the screen
-        if missileY <= 0:
-            missileY = 480
-            missile_state = "loaded"
+    # Missile movement and display
+    for missile in missiles[:]:
+        missile[1] -= missileY_change
+        if missile[1] <= 0:
+            missiles.remove(missile)  # Remove missile if off-screen
+        else:
+            screen.blit(missileimage, (missile[0], missile[1]))
 
-    # Draw
+    # Draw player and show score
     player(playerX, playerY)
     show_score(testX, testY)
 
-    # Update the display
-    pygame.display.update()
-
+    pygame.display.update()  # Refresh display
